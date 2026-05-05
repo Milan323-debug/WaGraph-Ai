@@ -5,11 +5,8 @@ A powerful mobile application for generating stunning images using advanced AI m
 ## ✨ Preview
 
 | Generate | Gallery | Settings |
-|----------|--------|---------|
-| ![](<img width="765" height="1600" alt="generate" src="https://github.com/user-attachments/assets/9402bd1b-a035-432f-832f-f322b1e1123b" />
-) | ![](<img width="766" height="1600" alt="Gallery" src="https://github.com/user-attachments/assets/84de4724-2d7f-4a72-a750-735ecf67cdfa" />
-) | ![](<img width="765" height="1600" alt="Settings" src="https://github.com/user-attachments/assets/e2c40190-9abd-4526-bde9-4534ab6bc0cd" />
-) |
+|----------|--------|----------|
+| <img src="https://github.com/user-attachments/assets/9402bd1b-a035-432f-832f-f322b1e1123b" width="250"/> | <img src="https://github.com/user-attachments/assets/84de4724-2d7f-4a72-a750-735ecf67cdfa" width="250"/> | <img src="https://github.com/user-attachments/assets/e2c40190-9abd-4526-bde9-4534ab6bc0cd" width="250"/> |
 
 ## Features
 
