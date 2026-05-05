@@ -2,6 +2,12 @@
 
 A powerful mobile application for generating stunning images using advanced AI models. WaGraph leverages cutting-edge technology to create high-quality images with customizable styles, aspect ratios, and generation parameters.
 
+## ✨ Preview
+
+| Generate | Gallery | Settings |
+|----------|--------|---------|
+| ![]() | ![]() | ![]() |
+
 ## Features
 
 ### 🎨 Multiple AI Models
