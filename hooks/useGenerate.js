@@ -31,7 +31,7 @@ export function useGenerate() {
     const finalPrompt = prefix + prompt.trim() + QUALITY_SUFFIX;
 
     try {
-      const uri = await generateImage({
+      const result = await generateImage({
         prompt:    finalPrompt,
         model,
         negPrompt,
@@ -40,7 +40,12 @@ export function useGenerate() {
         seed:      settings.seed || null,
         genWidth:  aspectRatio.w,
         genHeight: aspectRatio.h,
+        style:     stylePreset?.label || "None",
+        aspectRatio: aspectRatio.label,
       });
+      
+      // generateImage now returns { url, elapsed, ... } from worker
+      const uri = result.url || result;
 
       clearInterval(timerRef.current);
       const t = ((Date.now() - startRef.current) / 1000).toFixed(1);

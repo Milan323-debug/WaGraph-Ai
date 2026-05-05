@@ -1,7 +1,11 @@
-const API_URL = process.env.EXPO_PUBLIC_API_URL;
-const API_KEY  = process.env.EXPO_PUBLIC_API_KEY;
-
+const API_URL = process.env.EXPO_PUBLIC_API_URL ;
+const API_KEY  = process.env.EXPO_PUBLIC_API_KEY ;
 const TIMEOUT_MS = 120_000;
+
+const authHeaders = {
+  "Content-Type":  "application/json",
+  "Authorization": `Bearer ${API_KEY}`,
+};
 
 // ─── MODELS ───────────────────────────────────────────────────
 export const MODEL_INFO = {
@@ -232,17 +236,26 @@ export async function fetchModels() {
   return data.models.filter((m) => WORKING_MODELS.includes(m));
 }
 
-export async function generateImage({ prompt, model, negPrompt, steps, guidance, seed, genWidth, genHeight }) {
+export async function generateImage({ prompt, model, negPrompt, steps, guidance, seed, genWidth, genHeight, style, aspectRatio }) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
-    const body = { prompt, model, num_steps: steps, guidance, width: genWidth, height: genHeight };
+    const body = { 
+      prompt, 
+      model, 
+      num_steps: steps, 
+      guidance, 
+      width: genWidth, 
+      height: genHeight,
+      style,
+      aspectRatio,
+    };
     if (negPrompt) body.negative_prompt = negPrompt;
     if (seed)      body.seed = parseInt(seed, 10);
 
     const res = await fetch(`${API_URL}/generate`, {
       method:  "POST",
-      headers: { Authorization: `Bearer ${API_KEY}`, "Content-Type": "application/json" },
+      headers: authHeaders,
       body:    JSON.stringify(body),
       signal:  controller.signal,
     });
@@ -251,19 +264,37 @@ export async function generateImage({ prompt, model, negPrompt, steps, guidance,
       const msg = await res.text();
       throw new Error(msg || `HTTP ${res.status}`);
     }
-    const blob = await res.blob();
-    return await blobToBase64(blob);
+    const result = await res.json();
+    return result;
   } catch (e) {
     clearTimeout(timer);
     throw e;
   }
 }
 
-function blobToBase64(blob) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(reader.result);
-    reader.onerror   = reject;
-    reader.readAsDataURL(blob);
+// ─── Gallery Operations ────────────────────────────────────────
+export async function fetchGallery(limit = 50, nextCursor) {
+  const url = new URL(`${API_URL}/gallery`);
+  url.searchParams.set("limit", limit);
+  if (nextCursor) url.searchParams.set("next", nextCursor);
+  
+  const res = await fetch(url.toString(), { headers: authHeaders });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err?.error || `Gallery fetch failed (${res.status})`);
+  }
+  const data = await res.json();
+  return { images: data.images || [], nextCursor: data.nextCursor };
+}
+
+export async function deleteImage(publicId) {
+  const res = await fetch(`${API_URL}/image`, {
+    method:  "DELETE",
+    headers: authHeaders,
+    body:    JSON.stringify({ publicId }),
   });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err?.error || `Delete failed (${res.status})`);
+  }
 }
